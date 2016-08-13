@@ -83,7 +83,7 @@ function git-pull {
   # just pull from the remote.
   SRC="$1"
   DEST="$2"
-  if [[ ! -d $DEST ]]; then
+  if [[ ! -d "$DEST/.git" ]]; then
     mkdir -p $DEST
     git clone $SRC $DEST
   else
