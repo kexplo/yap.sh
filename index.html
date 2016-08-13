@@ -164,8 +164,7 @@ git-pull https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Apply .rc files.
 info "Linking dot files from kexplo/rc..."
-mkdir -p $RC_REPO
-git-pull https://github.com/kexplo/rc $RC_REPO
+git-pull https://github.com/kexplo/rc.git $RC_REPO
 sym-link $RC_REPO/.vimrc ~/.vimrc
 sym-link $RC_REPO/.zshrc ~/.zshrc
 sym-link $RC_REPO/.gitconfig ~/.gitconfig
