@@ -1,0 +1,42 @@
+@echo off
+rem <style> body { display: none; } </style>
+rem <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+rem <script> $(document.body).load('web.html'); </script>
+rem
+rem yap.bat
+rem ~~~~~~~
+rem
+rem Shortest way to terraform a Windows environment as for my taste:
+rem
+rem
+echo Check Administrative permissions....
+
+net session >nul 2>&1
+if NOT %errorlevel% == 0 (
+  echo ERROR: This script must be run as administrator to work properly!
+  exit /b 1
+)
+
+echo "Administrative permissions confirmed."
+
+where /q choco
+if ERRORLEVEL 1 (
+  echo "Instaling chocolatey..."
+  @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+)
+
+echo "Installing packages..."
+(
+  echo choco install -y wget curl vim notepadplusplus 7zip googlechrome 
+) > .yap.install.packages.bat
+
+start /WAIT "Install Packages" cmd /C call .yap.install.packages.bat
+del .yap.install.packages.bat
+
+echo  _  _  __   ____  _
+echo ( \/ )/ _\ (  _ \/ \
+echo  )  //    \ ) __/\_/
+echo (__/ \_/\_/(__)  (_)
+echo
+echo "Terraformed successfully by yap.bat."
+
