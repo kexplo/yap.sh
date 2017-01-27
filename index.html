@@ -203,6 +203,12 @@ PATH="$HOME/.linuxbrew/bin:$PATH"
 info "Installing facebook's PathPicker(fpp)..."
 brew install fpp
 
+info "Installing cargo..."
+curl -sSf https://static.rust-lang.org/rustup.sh | sh
+
+info "Installing ripgrep..."
+cargo install ripgrep
+
 # Show funny logo.
 info "
   _  _  __   ____  _   
