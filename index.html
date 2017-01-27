@@ -195,6 +195,14 @@ if [[ ! -x "$(command -v virtualenv)" ]]; then
 fi
 sudo pip install -U pdbpp
 
+# Install usefual utilities.
+info "Installing linuxbrew...."
+yes | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
+PATH="$HOME/.linuxbrew/bin:$PATH"
+
+info "Installing facebook's PathPicker(fpp)..."
+brew install fpp
+
 # Show funny logo.
 info "
   _  _  __   ____  _   
