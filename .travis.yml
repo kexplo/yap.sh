@@ -1,3 +1,4 @@
+langauge: c
 jobs:
   include:
     - stage: tests
