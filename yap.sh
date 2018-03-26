@@ -20,6 +20,7 @@ readonly UPDATE_APT_AFTER=86400
 readonly APT_UPDATED_AT="$HOME/.yap.sh-apt-updated-at"
 
 # Where some backup files to be stored.
+readonly TIMESTAMP=$(date +%s)
 readonly BACKUP_DIR=~/.yap.sh-bak-$TIMESTAMP
 
 print_help () {
