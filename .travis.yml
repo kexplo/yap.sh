@@ -1,0 +1,17 @@
+jobs:
+  include:
+    - stage: tests
+      env:
+        matrix:
+          - IMAGE=ubuntu:16.04
+          - IMAGE=ubuntu:14.04
+      script:
+        - docker run -it --name yap.sh -v "$PWD:yap.sh:/yap.sh" "$IMAGE" /yap.sh
+        - docker start -ia yap.sh
+    - stage: deploy
+      provider: pages
+      github-token: $GITHUB_TOKEN
+      name: Chanwoong Kim
+      email: chanwoong@chanwoong.kim
+      on:
+        branch: master
