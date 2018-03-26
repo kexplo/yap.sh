@@ -8,7 +8,7 @@ jobs:
       env:
         matrix:
           - IMAGE=ubuntu:16.04
-          - IMAGE=ubuntu:14.04
+          # - IMAGE=ubuntu:14.04
       script:
         - docker run -it --name yap.sh -v "$PWD/yap.sh:/yap.sh" "$IMAGE" /yap.sh
         - docker start -ia yap.sh
