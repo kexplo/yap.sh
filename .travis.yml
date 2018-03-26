@@ -1,5 +1,7 @@
 language: c
 sudo: required
+services:
+  - docker
 jobs:
   include:
     - stage: tests
