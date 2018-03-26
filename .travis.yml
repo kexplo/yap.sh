@@ -8,14 +8,13 @@ env:
   - IMAGE=ubuntu:14.04
 
 script:
-  - docker run -it --name yap.sh -v "$PWD/yap.sh:/yap.sh" "$IMAGE" /yap.sh
+  - ./build.sh
+  - chmod +x ./gh-pages/index.html
+  - docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
   - docker start -ia yap.sh
 
 jobs:
   include:
-    - stage: build
-      script:
-        - ./build.sh
     - stage: deploy
       local-dir: "./gh-pages"
       provider: pages
