@@ -4,26 +4,25 @@
 # yap.sh
 # ~~~~~~
 #
-# Shortest way to terraform a Ubuntu environment as for my taste:
-# inspired by sub.sh ( https://github.com/sublee/sub.sh )
+# Shortest way to terraform a Ubuntu 16.04 environment as for my taste
 #
 #  $ curl -sL yap.sh | bash [-s - OPTIONS]
+#   or
 #  $ wget -qO- yap.sh | bash [-s - OPTIONS]
 #
 
-set -e; function _ {
-TIMESTAMP=$(date +%s)
-USER=$(whoami)
-RC_REPO=~/rc
+set -euo pipefail; 
 
-# Where some backup files to be stored.
-BAK=~/.yap.sh-bak-$TIMESTAMP
+readonly YAPSH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Don't update APT if the last updated time is in a day.
-UPDATE_APT_AFTER=86400
-APT_UPDATED_AT=~/.yap.sh-apt-updated-at
+readonly UPDATE_APT_AFTER=86400
+readonly APT_UPDATED_AT="$HOME/.yap.sh-apt-updated-at"
 
-function help {
+# Where some backup files to be stored.
+readonly BACKUP_DIR=~/.yap.sh-bak-$TIMESTAMP
+
+print_help () {
   # Print the help message for --help.
   echo "Usage: curl -sL yap.sh | bash [-s - OPTIONS]"
   echo
@@ -34,196 +33,64 @@ function help {
   echo "                      updating period."
 }
 
-# Configure options.
-APT_UPDATE=auto
-for i in "$@"; do
-  case $i in
-    --help)
-      help
-      exit;;
-    --no-apt-update)
-      APT_UPDATE=false
-      shift;;
-    --force-apt-update)
-      APT_UPDATE=true
-      shift;;
-    *)
-      ;;
-  esac
-done
+git_repo () {
+  # Clone git repo. if the repo already exists, just pull
+  local url="$1"
+  local save_path="$2"
 
-if [[ -z $TERM ]]; then
-  function secho {
-    echo "$2"
-  }
-else
-  function secho {
-    echo -e "$(tput setaf $1)$2$(tput sgr0)"
-  }
-fi
+  if [[ -d "$save_path" ]]; then
+    git -C "$save_path" pull --rebase
+  else
+    mkdir -p "$save_path"
+    git clone "$url" "$save_path"
+  fi
+}
 
-function info {
+secho () {
+  local color="$1"
+  local msg="$2"
+  if [[ -z "$TERM" ]]; then
+    echo "$msg"
+  else
+    echo -e "$(tput setaf "${color}")${msg}$(tput sgr0)"
+  fi
+}
+
+info () {
+  local msg="$1"
   # Print an information log.
-  secho 6 "$1"
+  secho 6 "$msg"
 }
 
-function err {
+err () {
+  local msg="$1"
   # Print a red colored error message.
-  secho 1 "$1"
+  secho 1 "$msg"
 }
 
-function fatal {
+fatal () {
   # Print a red colored error message and exit the script.
   err "$@"
   exit 1
 }
 
-function git-pull {
-  # Clone a Git repository.  If the repository already exists,
-  # just pull from the remote.
-  SRC="$1"
-  DEST="$2"
-  if [[ ! -d "$DEST/.git" ]]; then
-    mkdir -p $DEST
-    git clone $SRC $DEST
-  else
-    git -C $DEST pull
-  fi
-}
-
-function sym-link {
-  # Make a symbolic link.  If something should be backed up at
-  # the destination path, it moves that to $BAK.
-  SRC="$1"
-  DEST="$2"
-  if [[ -e $DEST || -L $DEST ]]; then
-    if [[ "$(readlink -f $SRC)" == "$(readlink -f $DEST)" ]]; then
-      return
-    fi
-    mkdir -p $BAK
-    mv $DEST $BAK
-  fi
-  ln -s $SRC $DEST
-}
-
-function failed {
+failed () {
   fatal "Failed to terraform by yap.sh."
 }
 trap failed ERR
 
-# Go to the home directory.  A current working directory
-# may deny access from this user.
-cd ~
-
-# Install packages from APT.
-if [[ "$APT_UPDATE" != false ]]; then
-  APT_UPDATED_BEFORE=$((UPDATE_APT_AFTER + 1))
-  if [[ "$APT_UPDATE" == auto && -f $APT_UPDATED_AT ]]; then
-    APT_UPDATED_BEFORE=$(($TIMESTAMP - $(cat $APT_UPDATED_AT)))
+sym_link () {
+  # Make a symbolic link.  If something should be backed up at
+  # the destination path, it moves that to $BAKUP_DIR.
+  local src="$1"
+  local dest="$2"
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    if [[ "$(readlink -f "$src")" == "$(readlink -f "$dest")" ]]; then
+      return
+    fi
+    mkdir -p "$BACKUP_DIR"
+    mv "$dest" "$BACKUP_DIR"
   fi
-  if [[ $APT_UPDATED_BEFORE -gt $UPDATE_APT_AFTER ]]; then
-    info "Updating APT package lists..."
-    sudo apt-get update
-    echo $TIMESTAMP > $APT_UPDATED_AT
-  fi
-fi
-info "Installing packages from APT..."
-sudo apt-get install -y ack-grep aptitude curl git git-flow htop ntpdate vim
+  ln -s "$src" "$dest" 
+}
 
-# Install ZSH and Oh My ZSH!
-if [[ ! -x "$(command -v zsh)" ]]; then
-  info "Installing Zsh..."
-  sudo apt-get install -y zsh
-fi
-info "Setting up the Zsh environment..."
-sudo chsh -s `which zsh` $USER
-git-pull https://github.com/robbyrussell/oh-my-zsh ~/.oh-my-zsh
-git-pull https://github.com/zsh-users/zsh-syntax-highlighting \
-         ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-git-pull https://github.com/zsh-users/zsh-autosuggestions \
-         ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-git-pull https://github.com/bobthecow/git-flow-completion \
-         ~/.oh-my-zsh/custom/plugins/git-flow-completion
-
-# Install Vim-Plug for Vim.
-info "Setting up the Vim environment..."
-# enable python2 support (vim-nox-py2)
-# install the requirements for YouCompleteMe (mono-xbuild, cmake)
-sudo apt-get install -y vim-nox-py2 mono-xbuild cmake
-if [ ! -f ~/.vim/autoload/plug.vim ]
-then
-  info "Installing vim-plug..."
-  curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
-
-# Install tmux
-info "Setting up the Tmux environment..."
-if [[ ! -x "$(command -v tmux)" ]]; then
-  info "Installing Tmux..."
-  sudo apt-get install -y tmux
-fi
-git-pull https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-# Apply .rc files.
-info "Linking dot files from kexplo/rc..."
-git-pull https://github.com/kexplo/rc.git $RC_REPO
-sym-link $RC_REPO/.vimrc ~/.vimrc
-sym-link $RC_REPO/.zshrc ~/.zshrc
-sym-link $RC_REPO/.gitconfig ~/.gitconfig
-sym-link $RC_REPO/.tmux.conf ~/.tmux.conf
-sym-link $RC_REPO/kexplo.zsh-theme ~/.oh-my-zsh/custom/kexplo.zsh-theme
-
-# Install tmux plugin ( https://github.com/tmux-plugins/tpm/issues/6 )
-info "Installing tmux plugins..."
-# start a server but don't attach to it
-tmux start-server
-# create a new session but don't attach to it either
-tmux new-session -d
-# install the plugins
-~/.tmux/plugins/tpm/scripts/install_plugins.sh
-# killing the server is not required, I guess
-tmux kill-server
-
-# Setup a Python environment.
-info "Setting up the Python environment..."
-sudo apt-get install -y python python-dev python-setuptools python-pip python3-dev
-if [[ ! -x "$(command -v virtualenv)" ]]; then
-  sudo pip install virtualenv
-fi
-sudo pip install -U pdbpp
-
-# Install usefual utilities.
-info "Installing linuxbrew...."
-yes | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
-PATH="$HOME/.linuxbrew/bin:$PATH"
-
-info "Installing facebook's PathPicker(fpp)..."
-brew install fpp
-
-info "Installing cargo..."
-curl -sSf https://static.rust-lang.org/rustup.sh | sh
-
-info "Installing ripgrep..."
-cargo install ripgrep
-
-# Show funny logo.
-info "
-  _  _  __   ____  _   
- ( \/ )/ _\ (  _ \/ \   
-  )  //    \ ) __/\_/   
- (__/ \_/\_/(__)  (_)   
-"
-
-info "Terraformed successfully by yap.sh."
-if [[ -d $BAK ]]; then
-  info "Backup files are stored in $BAK"
-fi
-if [[ $SHELL != $(which zsh) && -z $ZSH ]]; then
-  info "To use terraformed ZSH, relogin or"
-  echo
-  info "  $ zsh"
-  echo
-fi
-
-}; _ $@
