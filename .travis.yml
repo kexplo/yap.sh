@@ -13,7 +13,11 @@ script:
 
 jobs:
   include:
+    - stage: build
+      script:
+        - ./build.sh
     - stage: deploy
+      local-dir: "./gh-pages"
       provider: pages
       github-token: $GITHUB_TOKEN
       name: Chanwoong Kim
