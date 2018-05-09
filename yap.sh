@@ -106,8 +106,9 @@ is_ubuntu_16_04 () {
       false
     fi
     true
+  else
+    false
   fi
-  false
 }
 
 is_osx () {
