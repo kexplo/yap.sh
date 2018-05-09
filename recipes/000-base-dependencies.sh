@@ -23,6 +23,10 @@ if is_ubuntu_16_04; then
    )
 
   sudo apt install -y "${APT_PKGS[@]}"
+elif is_osx; then
+  xcode-select --install
+  # install brew without prompt
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null
 else
   info "Skipped: $(get_os_type)"
 fi
