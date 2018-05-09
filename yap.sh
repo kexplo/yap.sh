@@ -109,3 +109,17 @@ is_ubuntu_16_04 () {
   fi
   false
 }
+
+is_osx () {
+  [[ "$(uname)" == "Darwin" ]]
+}
+
+get_os_type() {
+  if is_ubuntu_16_04; then
+    echo "ubuntu1604"
+  elif is_osx; then
+    echo "osx"
+  else
+    echo "unknown"
+  fi
+}

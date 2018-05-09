@@ -24,5 +24,5 @@ if is_ubuntu_16_04; then
 
   sudo apt install -y "${APT_PKGS[@]}"
 else
-  info "Skipped"
+  info "Skipped: $(get_os_type)"
 fi
