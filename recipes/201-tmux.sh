@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 info "Installing tpm"
-git_repo https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+github_repo tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 
 # Install tmux plugin ( https://github.com/tmux-plugins/tpm/issues/6 )

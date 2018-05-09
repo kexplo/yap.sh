@@ -47,6 +47,12 @@ git_repo () {
   fi
 }
 
+github_repo () {
+  local url="$1"
+  local save_path="$2"
+  git_repo "https://github.com/$1" "$2"
+}
+
 secho () {
   local color="$1"
   local msg="$2"
