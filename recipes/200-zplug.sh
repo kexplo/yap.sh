@@ -13,4 +13,11 @@ install_zplug() {
 set_zsh_as_default_shell
 install_zplug
 
-zplug install
+# Ensure the latest zplug plugins installed
+zsh -i -c "
+if ! zplug check; then
+  zplug install
+else
+  zplug update
+fi
+"
