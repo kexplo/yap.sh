@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
-info "Installing ripgrep..."
-cargo install ripgrep
+if ! has rg; then
+  info "Installing ripgrep..."
+  cargo install ripgrep
+else
+  info "Skipped, ripgrep already installed"
+fi
