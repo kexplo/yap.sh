@@ -7,7 +7,7 @@ set_zsh_as_default_shell() {
 }
 
 install_zplug() {
-  github_repo zplug/zplug "$HOME/zplug"
+  github_repo zplug/zplug "$HOME/.zplug"
 }
 
 set_zsh_as_default_shell
