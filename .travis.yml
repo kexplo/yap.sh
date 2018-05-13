@@ -3,11 +3,13 @@ sudo: required
 services:
   - docker
 
-env:
-  - IMAGE="yap.sh-ubuntu:16.04"
+global:
   # It fixes failed to install Linuxbrew on Travis-CI
   # SEE: https://stackoverflow.com/a/48398032/1545387
   - HOMEBREW_FORCE_VENDOR_RUBY=1
+
+env:
+  - IMAGE="yap.sh-ubuntu:16.04"
 
 script:
   - docker build -t yap.sh-ubuntu:16.04 docker
