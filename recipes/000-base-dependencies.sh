@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
 if is_ubuntu_16_04; then
-  # ubuntu 16.04 docker image doesn't have sudo command
-  if ! which sudo >/dev/null; then
-    apt update
-    apt install -y sudo
-  fi
 
   readonly APT_PKGS=(
     aptitude

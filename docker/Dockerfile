@@ -11,3 +11,6 @@ RUN echo "kexplo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 USER kexplo
 WORKDIR /home/kexplo
+
+# ubuntu 16.04 docker image doesn't have sudo command
+RUN sudo apt install -y sudo
