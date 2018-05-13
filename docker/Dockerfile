@@ -6,11 +6,12 @@ RUN useradd -ms /bin/bash kexplo
 #            │└─ Set user's login shell to '/bin/bash'
 #            └─ Create home directory
 
+# ubuntu 16.04 docker image doesn't have sudo command
+RUN apt install -y sudo
+
 # Make kexplo user as sudoer
 RUN echo "kexplo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 USER kexplo
 WORKDIR /home/kexplo
 
-# ubuntu 16.04 docker image doesn't have sudo command
-RUN sudo apt install -y sudo
