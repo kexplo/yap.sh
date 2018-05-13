@@ -13,7 +13,7 @@ script:
   - docker build -t yap.sh-ubuntu:16.04 docker
   - ./build.sh
   - chmod +x ./gh-pages/index.html
-  - docker run -it --name yap.sh -e USER='root' -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
+  - docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
 
 jobs:
   include:

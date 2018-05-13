@@ -16,3 +16,5 @@ RUN echo "kexplo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 USER kexplo
 WORKDIR /home/kexplo
 
+ENV USER kexplo
+
