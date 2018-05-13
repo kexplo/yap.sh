@@ -52,3 +52,5 @@ for recipe in $YAPSH_DIR/recipes/*; do
     info "$(basename "$recipe") added"
   fi
 done
+
+chmod +x "$YAPSH_DIR/gh-pages/index.html"
