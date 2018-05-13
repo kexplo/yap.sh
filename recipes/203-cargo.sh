@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
-info "Installing cargo..."
-curl -sSf https://static.rust-lang.org/rustup.sh | sh
+if ! has cargo; then
+  info "Installing cargo..."
+  curl -sSf https://static.rust-lang.org/rustup.sh | sh
+else
+  info "Skipped, cargo already installed"
+fi

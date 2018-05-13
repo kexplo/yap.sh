@@ -130,3 +130,7 @@ get_os_type () {
     echo "unknown"
   fi
 }
+
+has () {
+  type "$1" > /dev/null 2>1&
+}
