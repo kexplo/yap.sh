@@ -7,6 +7,7 @@ if is_ubuntu_16_04; then
     python-dev \
     python-setuptools \
     python-pip \
-    python3-dev \
     virtualenv
+
+  sudo apt install -y python3-dev
 fi
