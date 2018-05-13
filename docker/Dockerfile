@@ -7,7 +7,8 @@ RUN useradd -ms /bin/bash kexplo
 #            └─ Create home directory
 
 # ubuntu 16.04 docker image doesn't have sudo command
-RUN apt install -y sudo
+RUN apt updage && apt install -y sudo
+RUN rm -rf /var/lib/apt/lists/*
 
 # Make kexplo user as sudoer
 RUN echo "kexplo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
