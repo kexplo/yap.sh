@@ -6,5 +6,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
   # Set Linuxbrew's variables to prevent install failing
   export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 
+  set +o pipefail  # prevent to failing yap.sh
   yes | sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+  set -o pipefail
 fi
