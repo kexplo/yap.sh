@@ -82,9 +82,9 @@ fatal () {
 }
 
 failed () {
-  fatal "Failed to terraform by yap.sh."
+  fatal "Failed to running yap.sh. Error on line $1"
 }
-trap failed ERR
+trap 'failed $LINENO' ERR
 
 sym_link () {
   # Make a symbolic link.  If something should be backed up at
