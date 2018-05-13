@@ -4,6 +4,7 @@ if is_ubuntu_16_04; then
 
   readonly APT_PKGS=(
     aptitude
+    build-essential
     curl
     git
     git-flow
