@@ -17,6 +17,7 @@ if is_ubuntu_16_04; then
     tmux
    )
 
+  sudo apt update
   sudo apt install -y "${APT_PKGS[@]}"
 elif is_osx; then
   xcode-select --install
