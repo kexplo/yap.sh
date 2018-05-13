@@ -4,7 +4,7 @@ set -euo pipefail
 
 readonly YAPSH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-mkdir -p "./gh-pages"
+mkdir -p "$YAPSH_DIR/gh-pages"
 
 secho () {
   local color="$1"
@@ -24,17 +24,17 @@ info () {
 
 gh-cp () {
   local filename="$1"
-  cp "$filename" "./gh-pages/"
+  cp "$filename" "$YAPSH_DIR/gh-pages/"
 }
 
 gh-idx-append () {
   local source="$1"
-  cat "$source" >> "./gh-pages/index.html"
+  cat "$source" >> "$YAPSH_DIR/gh-pages/index.html"
 }
 
 gh-idx-append-line () {
   local line="$1"
-  echo "$line" >> "./gh-pages/index.html"
+  echo "$line" >> "$YAPSH_DIR/gh-pages/index.html"
 }
 
 gh-cp "CNAME"
