@@ -6,3 +6,5 @@ if ! has cargo; then
 else
   info "Skipped, cargo already installed"
 fi
+
+export PATH="$HOME/.cargo/bin:$PATH"
