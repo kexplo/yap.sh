@@ -132,5 +132,5 @@ get_os_type () {
 }
 
 has () {
-  type "$1" > /dev/null 2>1&
+  type "$1" > /dev/null 2>&1
 }
