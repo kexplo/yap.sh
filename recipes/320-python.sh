@@ -3,10 +3,13 @@
 if is_ubuntu_16_04; then
   info "Setting up the Python environment..."
   sudo apt-get install -y \
-    python \
-    python-dev \
+    python2.7 \
+    python2.7-dev
+
+  sudo apt-get install -y \
     python-setuptools \
     python-pip \
-    python3-dev \
     virtualenv
+
+  sudo apt-get install -y python3 python3-dev
 fi
