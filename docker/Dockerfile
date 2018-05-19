@@ -1,4 +1,5 @@
-FROM ubuntu:16.04
+ARG UBUNTU_VERSION
+FROM ubuntu:$UBUNTU_VERSION
 
 LABEL maintainer "Chanwoong Kim <chanwoong@chanwoong.kim>"
 
