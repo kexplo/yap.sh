@@ -18,8 +18,8 @@ if is_ubuntu_16_04; then
     gawk         # Fix zplug update raises unknown error, SEE: https://github.com/zplug/zplug/issues/359#issuecomment-349534715
    )
 
-  sudo apt update
-  sudo apt install -y "${APT_PKGS[@]}"
+  sudo apt-get update
+  sudo apt-get install -y "${APT_PKGS[@]}"
 elif is_osx; then
   xcode-select --install
   # install brew without prompt
