@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-readonly YAPSH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+readonly yapsh_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 recipe_count=0
 ubuntu_16_count=0
@@ -13,7 +13,7 @@ no_ubuntu_16_recipes=()
 no_ubuntu_18_recipes=()
 no_osx_recipes=()
 
-for recipe in $YAPSH_DIR/recipes/*; do
+for recipe in $yapsh_dir/recipes/*; do
   if [[ -f "$recipe" ]]; then
     _basename="$(basename "$recipe")"
     if grep -q 'is_ubuntu_16_04' "$recipe"; then

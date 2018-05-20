@@ -13,15 +13,15 @@
 
 set -euo pipefail; 
 
-readonly YAPSH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+readonly yapsh_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Don't update APT if the last updated time is in a day.
-readonly UPDATE_APT_AFTER=86400
-readonly APT_UPDATED_AT="$HOME/.yap.sh-apt-updated-at"
+readonly update_apt_after=86400
+readonly apt_updated_at="$HOME/.yap.sh-apt-updated-at"
 
 # Where some backup files to be stored.
-readonly TIMESTAMP=$(date +%s)
-readonly BACKUP_DIR=~/.yap.sh-bak-$TIMESTAMP
+readonly timestamp=$(date +%s)
+readonly backup_dir=~/.yap.sh-bak-$timestamp
 
 print_help () {
   # Print the help message for --help.
@@ -95,8 +95,8 @@ sym_link () {
     if [[ "$(readlink -f "$src")" == "$(readlink -f "$dest")" ]]; then
       return
     fi
-    mkdir -p "$BACKUP_DIR"
-    mv "$dest" "$BACKUP_DIR"
+    mkdir -p "$backup_dir"
+    mv "$dest" "$backup_dir"
   fi
   ln -s "$src" "$dest" 
 }

@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-readonly YAPSH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+readonly yapsh_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-mkdir -p "$YAPSH_DIR/gh-pages"
+mkdir -p "$yapsh_dir/gh-pages"
 
 secho () {
   local color="$1"
@@ -24,24 +24,24 @@ info () {
 
 gh-cp () {
   local filename="$1"
-  cp "$filename" "$YAPSH_DIR/gh-pages/"
+  cp "$filename" "$yapsh_dir/gh-pages/"
 }
 
 gh-idx-append () {
   local source="$1"
-  cat "$source" >> "$YAPSH_DIR/gh-pages/index.html"
+  cat "$source" >> "$yapsh_dir/gh-pages/index.html"
 }
 
 gh-idx-append-line () {
   local line="$1"
-  echo "$line" >> "$YAPSH_DIR/gh-pages/index.html"
+  echo "$line" >> "$yapsh_dir/gh-pages/index.html"
 }
 
 gh-cp "CNAME"
 gh-cp "index.html"
 gh-idx-append "yap.sh"
 
-for recipe in $YAPSH_DIR/recipes/*; do
+for recipe in $yapsh_dir/recipes/*; do
   if [[ -f "$recipe" ]]; then
     _basename="$(basename "$recipe")"
     gh-idx-append-line "echo '================================================================================'"
@@ -53,4 +53,4 @@ for recipe in $YAPSH_DIR/recipes/*; do
   fi
 done
 
-chmod +x "$YAPSH_DIR/gh-pages/index.html"
+chmod +x "$yapsh_dir/gh-pages/index.html"

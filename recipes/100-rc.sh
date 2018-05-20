@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-readonly RC_REPO="$HOME/rc"
+readonly rc_repo="$HOME/rc"
 
 # Symbolic links config files.
 info "Linking dot files from kexplo/rc..."
 
-github_repo kexplo/rc.git "$RC_REPO"
-sym_link "$RC_REPO/stdlib.sh" "$HOME/stdlib.sh"
-sym_link "$RC_REPO/.vimrc" "$HOME/.vimrc"
-sym_link "$RC_REPO/.zshrc" "$HOME/.zshrc"
-sym_link "$RC_REPO/.gitconfig" "$HOME/.gitconfig"
-sym_link "$RC_REPO/.tmux.conf" "$HOME/.tmux.conf"
+github_repo kexplo/rc.git "$rc_repo"
+sym_link "$rc_repo/stdlib.sh" "$HOME/stdlib.sh"
+sym_link "$rc_repo/.vimrc" "$HOME/.vimrc"
+sym_link "$rc_repo/.zshrc" "$HOME/.zshrc"
+sym_link "$rc_repo/.gitconfig" "$HOME/.gitconfig"
+sym_link "$rc_repo/.tmux.conf" "$HOME/.tmux.conf"

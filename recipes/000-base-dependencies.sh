@@ -2,7 +2,7 @@
 
 if is_ubuntu_16_04; then
 
-  readonly APT_PKGS=(
+  readonly apt_pkgs=(
     aptitude
     build-essential
     curl
@@ -14,7 +14,7 @@ if is_ubuntu_16_04; then
    )
 
   sudo apt-get update
-  sudo apt-get install -y "${APT_PKGS[@]}"
+  sudo apt-get install -y "${apt_pkgs[@]}"
 elif is_osx; then
   xcode-select --install
   # install brew without prompt
