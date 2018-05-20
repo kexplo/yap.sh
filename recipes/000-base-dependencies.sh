@@ -9,7 +9,6 @@ if is_ubuntu_16_04; then
     git
     git-flow
     htop
-    python2.7
     vim
     vim-nox-py2
     mono-xbuild  # for YouCompleteMe
