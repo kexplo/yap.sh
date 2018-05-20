@@ -12,7 +12,7 @@ info "Terraformed successfully by yap.sh."
 if [[ -d "$BACKUP_DIR" ]]; then
   info "Backup files are stored in $BACKUP_DIR"
 fi
-if [ "$SHELL" != "$(which zsh)" ] && [ "${ZSH:-x}" != "x" ]; then
+if [ "$SHELL" != "$(which zsh)" ] && [ "${ZSH:-x}" == "x" ]; then
   info "Now, ZSH is default shell. To use terraformed ZSH, re-login or"
   echo
   info "  $ zsh"
