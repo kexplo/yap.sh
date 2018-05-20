@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# pass os: all
 
 if ! has rg; then
   info "Installing ripgrep..."

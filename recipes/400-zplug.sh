@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# pass os: all
 
 info "Setting up the Zsh environment..."
 

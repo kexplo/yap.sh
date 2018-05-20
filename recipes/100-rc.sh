@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# pass os: all
 
 readonly rc_repo="$HOME/rc"
 
