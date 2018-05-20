@@ -44,8 +44,8 @@ function print_no_recipes() {
 
 echo "OS Coverages:"
 echo "  Ubuntu 16.04: $ubuntu_16_count / $recipe_count"
-print_array "${no_ubuntu_16_recipes[@]}"
+print_no_recipes "${no_ubuntu_16_recipes[@]}"
 echo "  Ubuntu 18.04: $ubuntu_18_count / $recipe_count"
-print_array "${no_ubuntu_18_recipes[@]}"
+print_no_recipes "${no_ubuntu_18_recipes[@]}"
 echo "  OS X: $osx_count / $recipe_count"
-print_array "${no_osx_recipes[@]}"
+print_no_recipes "${no_osx_recipes[@]}"
