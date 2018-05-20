@@ -35,33 +35,6 @@ pass_os_check () {
   grep -q "# pass os: $os" "$recipe_path" || grep -q "is_${mangled_os}" "$recipe_path"
 }
 
-for recipe in $yapsh_dir/recipes/*; do
-  if [[ -f "$recipe" ]]; then
-    _basename="$(basename "$recipe")"
-    if pass_os_check "all" "$recipe"; then
-      recipe_count=$((recipe_count+1))
-      increase_all_count
-      continue
-    fi
-    if pass_os_check "ubuntu 16.04" "$recipe"; then
-      ubuntu_16_count=$((ubuntu_16_count+1))
-    else
-      no_ubuntu_16_recipes+=("$_basename")
-    fi
-    if pass_os_check "ubuntu 18.04" "$recipe"; then
-      ubuntu_18_count=$((ubuntu_18_count+1))
-    else
-      no_ubuntu_18_recipes+=("$_basename")
-    fi
-    if pass_os_check "osx" "$recipe"; then
-      osx_count=$((osx_count+1))
-    else
-      no_osx_recipes+=("$_basename")
-    fi
-    recipe_count=$((recipe_count+1))
-  fi
-done
-
 function print_no_recipes() {
   local -a arr=("$@")
   for item in "${arr[@]}"; do
@@ -69,10 +42,45 @@ function print_no_recipes() {
   done
 }
 
-echo "OS Coverages:"
-echo "  Ubuntu 16.04: $ubuntu_16_count / $recipe_count"
-print_no_recipes "${no_ubuntu_16_recipes[@]}"
-echo "  Ubuntu 18.04: $ubuntu_18_count / $recipe_count"
-print_no_recipes "${no_ubuntu_18_recipes[@]}"
-echo "  OS X: $osx_count / $recipe_count"
-print_no_recipes "${no_osx_recipes[@]}"
+function run() {
+  for recipe in $yapsh_dir/recipes/*; do
+    if [[ -f "$recipe" ]]; then
+      _basename="$(basename "$recipe")"
+      if pass_os_check "all" "$recipe"; then
+        recipe_count=$((recipe_count+1))
+        increase_all_count
+        continue
+      fi
+      if pass_os_check "ubuntu 16.04" "$recipe"; then
+        ubuntu_16_count=$((ubuntu_16_count+1))
+      else
+        no_ubuntu_16_recipes+=("$_basename")
+      fi
+      if pass_os_check "ubuntu 18.04" "$recipe"; then
+        ubuntu_18_count=$((ubuntu_18_count+1))
+      else
+        no_ubuntu_18_recipes+=("$_basename")
+      fi
+      if pass_os_check "osx" "$recipe"; then
+        osx_count=$((osx_count+1))
+      else
+        no_osx_recipes+=("$_basename")
+      fi
+      recipe_count=$((recipe_count+1))
+    fi
+  done
+
+  echo "OS Coverages:"
+  echo "  Ubuntu 16.04: $ubuntu_16_count / $recipe_count"
+  print_no_recipes "${no_ubuntu_16_recipes[@]}"
+  echo "  Ubuntu 18.04: $ubuntu_18_count / $recipe_count"
+  print_no_recipes "${no_ubuntu_18_recipes[@]}"
+  echo "  OS X: $osx_count / $recipe_count"
+  print_no_recipes "${no_osx_recipes[@]}"
+
+  if [ "${#no_ubuntu_16_recipes[@]}" -gt 0 ] || [ "${#no_ubuntu_18_recipes[@]}" -gt 0 ] || [ "${#no_osx_recipes[@]}" -gt 0 ]; then
+    return 1
+  fi
+}
+
+run
