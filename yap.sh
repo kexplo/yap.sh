@@ -111,8 +111,9 @@ check_ubuntu_ver () {
     fi
     if [[ "$VERSION_ID" != "$version" ]]; then
       false
+    else
+      true
     fi
-    true
   else
     false
   fi
