@@ -20,7 +20,7 @@ script:
 
 jobs:
   include:
-    - name: Coverage check
+    - stage: Coverage check
       script: ./coverage.sh
 
     - stage: deploy
