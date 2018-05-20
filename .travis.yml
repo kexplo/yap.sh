@@ -20,6 +20,9 @@ script:
 
 jobs:
   include:
+    - stage: test
+      script: ./coverage.sh
+
     - stage: deploy
       local-dir: "./gh-pages"
       provider: pages
