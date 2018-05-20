@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 
-if is_ubuntu_16_04; then
-  readonly APT_PKGS=(
-    vim
-    vim-nox-py2
-    mono-xbuild  # for YouCompleteMe
-    cmake        # for YouCompleteMe
-  )
-  sudo apt-get install -y "${APT_PKGS[@]}"
-fi
+function install_vim () {
+  if is_ubuntu_16_04; then
+    local pkgs=(
+      vim
+      vim-nox-py2
+      mono-xbuild  # for YouCompleteMe
+      cmake        # for YouCompleteMe
+    )
+    sudo apt-get install -y "${pkgs[@]}"
+  fi
+}
+
+
+install_vim
 
 if [ ! -f ~/.vim/autoload/plug.vim ]
 then
