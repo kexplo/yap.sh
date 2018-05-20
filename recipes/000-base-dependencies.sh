@@ -9,10 +9,6 @@ if is_ubuntu_16_04; then
     git
     git-flow
     htop
-    vim
-    vim-nox-py2
-    mono-xbuild  # for YouCompleteMe
-    cmake        # for YouCompleteMe
     zsh
     gawk         # Fix zplug update raises unknown error, SEE: https://github.com/zplug/zplug/issues/359#issuecomment-349534715
    )
