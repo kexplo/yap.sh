@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if is_ubuntu_16_04; then
+  sudo apt-get install -y tmux
+fi
+
 info "Installing tpm"
 github_repo tmux-plugins/tpm ~/.tmux/plugins/tpm
 

@@ -14,7 +14,6 @@ if is_ubuntu_16_04; then
     mono-xbuild  # for YouCompleteMe
     cmake        # for YouCompleteMe
     zsh
-    tmux
     gawk         # Fix zplug update raises unknown error, SEE: https://github.com/zplug/zplug/issues/359#issuecomment-349534715
    )
 
