@@ -101,20 +101,30 @@ sym_link () {
   ln -s "$src" "$dest" 
 }
 
-is_ubuntu_16_04 () {
+check_ubuntu_ver () {
+  local version="$1"
   if [ -f '/etc/os-release' ]; then
     # shellcheck disable=SC1091
     source '/etc/os-release'
     if [[ "$NAME" != "Ubuntu" ]]; then
       false
     fi
-    if [[ "$VERSION_ID" != "16.04" ]]; then
+    if [[ "$VERSION_ID" != "$version" ]]; then
       false
     fi
     true
   else
     false
   fi
+}
+
+is_ubuntu_16_04 () {
+  check_ubuntu_ver "16.04"
+}
+
+
+is_ubuntu_18_04 () {
+  check_ubuntu_ver "18.04"
 }
 
 is_osx () {
