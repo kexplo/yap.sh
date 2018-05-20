@@ -14,7 +14,8 @@ set_zsh_as_default_shell
 install_zplug
 
 # Ensure the latest zplug plugins installed
-zsh -i -c "
+zsh -c "
+source \"$HOME/.zplug/init.zsh\"
 if ! zplug check; then
   zplug install
 else
