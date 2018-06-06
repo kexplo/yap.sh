@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# pass os: all
+# skip os: all
 
 brew install direnv

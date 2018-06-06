@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# pass os: ubuntu 16.04
-# pass os: ubuntu 18.04
+# skip os: ubuntu 16.04
+# skip os: ubuntu 18.04
 
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 

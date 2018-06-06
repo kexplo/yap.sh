@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pass os: all
+# skip os: all
 
 if ! has cargo; then
   info "Installing cargo..."
