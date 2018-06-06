@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # skip os: all
+set -euo pipefail
 
 # Show funny logo.
 info '

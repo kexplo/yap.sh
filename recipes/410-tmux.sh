@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 if is_ubuntu_16_04; then
   sudo apt-get install -y tmux

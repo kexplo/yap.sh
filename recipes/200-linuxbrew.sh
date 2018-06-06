@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # skip os: ubuntu 16.04
 # skip os: ubuntu 18.04
+set -euo pipefail
 
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 

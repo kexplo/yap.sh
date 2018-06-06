@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # skip os: all
+set -euo pipefail
 
 if ! has cargo; then
   info "Installing cargo..."

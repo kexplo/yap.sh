@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 function install_vim_dependencies() {
   if is_ubuntu_16_04; then
