@@ -9,9 +9,9 @@ ubuntu_16_count=0
 ubuntu_18_count=0
 osx_count=0
 
-no_ubuntu_16_recipes=()
-no_ubuntu_18_recipes=()
-no_osx_recipes=()
+declare -a no_ubuntu_16_recipes=()
+declare -a no_ubuntu_18_recipes=()
+declare -a no_osx_recipes=()
 
 is_osx () {
   [[ "$(uname)" == "Darwin" ]]
@@ -37,7 +37,7 @@ check_pass_os () {
 
 function print_no_recipes() {
   local -a arr=("$@")
-  for item in "${arr[@]}"; do
+  for item in ${arr[@]+"${arr[@]}"}; do
     echo "    - ✘ $item"
   done
 }
@@ -72,11 +72,11 @@ function run() {
 
   echo "OS Coverages:"
   echo "  Ubuntu 16.04: $ubuntu_16_count / $recipe_count"
-  print_no_recipes "${no_ubuntu_16_recipes[@]}"
+  print_no_recipes ${no_ubuntu_16_recipes[@]+"${no_ubuntu_16_recipes[@]}"}
   echo "  Ubuntu 18.04: $ubuntu_18_count / $recipe_count"
-  print_no_recipes "${no_ubuntu_18_recipes[@]}"
+  print_no_recipes ${no_ubuntu_18_recipes[@]+"${no_ubuntu_18_recipes[@]}"}
   echo "  OS X: $osx_count / $recipe_count"
-  print_no_recipes "${no_osx_recipes[@]}"
+  print_no_recipes ${no_osx_recipes[@]+"${no_osx_recipes[@]}"}
 
   if [ "${#no_ubuntu_16_recipes[@]}" -gt 0 ] || [ "${#no_ubuntu_18_recipes[@]}" -gt 0 ] || [ "${#no_osx_recipes[@]}" -gt 0 ]; then
     return 1
