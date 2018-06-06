@@ -23,7 +23,7 @@ increase_all_count () {
   osx_count=$((osx_count+1))
 }
 
-pass_os_check () {
+check_pass_os () {
   local os="$1"
   local recipe_path="$2"
   local mangled_os
@@ -46,22 +46,22 @@ function run() {
   for recipe in $yapsh_dir/recipes/*; do
     if [[ -f "$recipe" ]]; then
       _basename="$(basename "$recipe")"
-      if pass_os_check "all" "$recipe"; then
+      if check_pass_os "all" "$recipe"; then
         recipe_count=$((recipe_count+1))
         increase_all_count
         continue
       fi
-      if pass_os_check "ubuntu 16.04" "$recipe"; then
+      if check_pass_os "ubuntu 16.04" "$recipe"; then
         ubuntu_16_count=$((ubuntu_16_count+1))
       else
         no_ubuntu_16_recipes+=("$_basename")
       fi
-      if pass_os_check "ubuntu 18.04" "$recipe"; then
+      if check_pass_os "ubuntu 18.04" "$recipe"; then
         ubuntu_18_count=$((ubuntu_18_count+1))
       else
         no_ubuntu_18_recipes+=("$_basename")
       fi
-      if pass_os_check "osx" "$recipe"; then
+      if check_pass_os "osx" "$recipe"; then
         osx_count=$((osx_count+1))
       else
         no_osx_recipes+=("$_basename")
