@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# skip os: all
+# pass os: all
 set -euo pipefail
 
 if ! has rg; then
