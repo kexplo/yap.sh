@@ -43,7 +43,7 @@ function print_no_recipes() {
 }
 
 function run() {
-  for recipe in $yapsh_dir/recipes/*; do
+  for recipe in "$yapsh_dir"/recipes/*; do
     if [[ -f "$recipe" ]]; then
       _basename="$(basename "$recipe")"
       if check_pass_os "all" "$recipe"; then
