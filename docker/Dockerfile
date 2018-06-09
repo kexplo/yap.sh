@@ -8,8 +8,15 @@ RUN useradd -ms /bin/bash kexplo
 #            └─ Create home directory
 
 # ubuntu 16.04 docker image doesn't have sudo command
-RUN apt-get update && apt-get install -y sudo locales file
+RUN apt-get update && apt-get install -y sudo \
+        locales \
+        file \
+        tzdata
 RUN rm -rf /var/lib/apt/lists/*
+
+# Timezone settings
+RUN echo "UTC" > /etc/timezone
+RUN dpkg-reconfigure -f noninteractive tzdata
 
 # Set locale
 RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
