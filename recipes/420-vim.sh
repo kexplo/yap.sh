@@ -46,14 +46,25 @@ function install_vim () {
   sudo rm -rf /tmp/vim
 }
 
+function install_vim_ycm() {
+  pushd "$HOME/.vim/plugged/YouCompleteMe"
+   python ./install.py --cs-completer --clang-completer 
+  popd
+}
+
+function install_vim_plugins() {
+  if [ ! -f ~/.vim/autoload/plug.vim ]
+  then
+    info "Installing Vim-Plug..."
+    curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  fi
+
+  info "Installing Vim plugins..."
+  vim +PlugUpdate +qall
+
+  install_vim_ycm
+}
+
 install_vim 8.1
-
-if [ ! -f ~/.vim/autoload/plug.vim ]
-then
-  info "Installing Vim-Plug..."
-  curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
-
-info "Installing Vim plugins..."
-vim +PlugInstall +qall
+install_vim_plugins
