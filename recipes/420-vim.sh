@@ -66,5 +66,10 @@ function install_vim_plugins() {
   install_vim_ycm
 }
 
+function install_vi_symbolic_link() {
+  sudo ln -fs $(which vim) /usr/bin/vi
+}
+
 install_vim 8.1
+install_vi_symbolic_link
 install_vim_plugins
