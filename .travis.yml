@@ -37,5 +37,7 @@ jobs:
       keep-history: true
       name: Chanwoong Kim
       email: chanwoong@chanwoong.kim
+      fqdn: yap.sh
+      verbose: true
       on:
         branch: develop
