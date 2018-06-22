@@ -29,15 +29,14 @@ jobs:
     #   script: ./coverage.sh
 
     - stage: deploy
-      script: ./build.sh
-      provider: pages
-      skip-cleanup: true
-      local-dir: "./gh-pages"
-      github-token: $GITHUB_TOKEN
-      keep-history: true
-      name: Chanwoong Kim
-      email: chanwoong@chanwoong.kim
-      fqdn: yap.sh
-      verbose: true
-      on:
-        branch: develop
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        local-dir: "./gh-pages"
+        github-token: $GITHUB_TOKEN
+        keep-history: true
+        committer-from-gh: true
+        fqdn: yap.sh
+        verbose: true
+        on:
+          branch: develop
