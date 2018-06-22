@@ -74,10 +74,19 @@ function install_vim_plugins() {
       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   fi
 
+  local prev_ycm_version=""
+  if [ -d "$HOME/.vim/plugged/YouCompleteMe" ]; then
+    prev_ycm_version=$(git -C "$HOME/.vim/plugged/YouCompleteMe" rev-parse --short HEAD)
+  fi
+
   info "Installing Vim plugins..."
   vim +PlugUpdate +qall
 
-  install_vim_ycm
+  local new_ycm_version
+  new_ycm_version=$(git -C "$HOME/.vim/plugged/YouCompleteMe" rev-parse --short HEAD)
+  if [[ "$prev_ycm_version" != "$new_ycm_version" ]]; then
+    install_vim_ycm
+  fi
 }
 
 function install_vi_symbolic_link() {
