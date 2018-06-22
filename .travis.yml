@@ -35,4 +35,4 @@ jobs:
       name: Chanwoong Kim
       email: chanwoong@chanwoong.kim
       on:
-        branch: master
+        branch: develop
