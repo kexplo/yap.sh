@@ -23,7 +23,7 @@ function check_vim_installed() {
   if ! has vim; then
     false
   fi
-  vim --version | head -1 | grep "Vi IMproved $version"
+  vim --version | head -1 | grep -q "Vi IMproved $version"
 }
 
 function install_vim () {
