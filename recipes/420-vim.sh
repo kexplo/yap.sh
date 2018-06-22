@@ -18,8 +18,22 @@ function install_vim_dependencies() {
   fi
 }
 
+function check_vim_installed() {
+  version="$1"
+  if ! has vim; then
+    false
+  fi
+  vim --version | head -1 | grep "Vi IMproved $version"
+}
+
 function install_vim () {
   version="$1"
+
+  if check_vim_installed "$version"; then
+    echo "Vim $version already installed"
+    return
+  fi
+
   version_regex="${version/./\\.}"
   # Clone latest revision of version
   git clone -b "$(git ls-remote --tags https://github.com/vim/vim.git | grep -o "v${version_regex}"'\.[0-9]\+' | tail -1)" --depth 1 https://github.com/vim/vim.git /tmp/vim
