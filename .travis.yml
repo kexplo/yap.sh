@@ -29,6 +29,7 @@ jobs:
     #   script: ./coverage.sh
 
     - stage: deploy
+      script: ./build.sh
       deploy:
         provider: pages
         skip-cleanup: true
