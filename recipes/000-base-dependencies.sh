@@ -12,6 +12,7 @@ if is_ubuntu_16_04; then
     htop
     zsh
     gawk         # Fix zplug update raises unknown error, SEE: https://github.com/zplug/zplug/issues/359#issuecomment-349534715
+    wget
    )
 
   sudo apt-get update
