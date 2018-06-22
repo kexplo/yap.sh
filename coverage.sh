@@ -81,8 +81,6 @@ function run() {
   if [ "${#no_ubuntu_16_recipes[@]}" -gt 0 ] || [ "${#no_ubuntu_18_recipes[@]}" -gt 0 ] || [ "${#no_osx_recipes[@]}" -gt 0 ]; then
     return 1
   fi
-
-  return 1; # block deploy
 }
 
 run
