@@ -8,19 +8,22 @@ global:
   # SEE: https://stackoverflow.com/a/48398032/1545387
   - HOMEBREW_FORCE_VENDOR_RUBY=1
 
-env:
-  - IMAGE="yap.sh-ubuntu:16.04"
-  - IMAGE="yap.sh-ubuntu:18.04"
-
-before_script:
-  - docker build -t yap.sh-ubuntu:16.04 docker --build-arg UBUNTU_VERSION=16.04
-  - docker build -t yap.sh-ubuntu:18.04 docker --build-arg UBUNTU_VERSION=18.04
-  - ./build.sh
-
-script: docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
-
 jobs:
   include:
+    - stage: build
+      script:
+        - docker build -t yap.sh-ubuntu:16.04 docker --build-arg UBUNTU_VERSION=16.04
+        - docker build -t yap.sh-ubuntu:18.04 docker --build-arg UBUNTU_VERSION=18.04
+        - ./build.sh
+
+    - &test
+      stage: test
+      script: docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
+      env: IMAGE="yap.sh-ubuntu:16.04"
+
+    - <<: *test
+      env: IMAGE="yap.sh-ubuntu:18.04"
+
     - stage: Coverage check
       script: ./coverage.sh
 
