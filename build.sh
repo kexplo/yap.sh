@@ -55,3 +55,4 @@ done
 
 chmod +x "$yapsh_dir/gh-pages/index.html"
 cp "$yapsh_dir/web.html" "$yapsh_dir/gh-pages"
+cp -rf "$yapsh_dir/w" "$yapsh_dir/gh-pages"
