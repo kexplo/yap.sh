@@ -10,23 +10,23 @@ global:
 
 before_script:
   # TODO: cache docker
-  # - docker build -t yap.sh-ubuntu:16.04 docker --build-arg UBUNTU_VERSION=16.04
-  # - docker build -t yap.sh-ubuntu:18.04 docker --build-arg UBUNTU_VERSION=18.04
+  - docker build -t yap.sh-ubuntu:16.04 docker --build-arg UBUNTU_VERSION=16.04
+  - docker build -t yap.sh-ubuntu:18.04 docker --build-arg UBUNTU_VERSION=18.04
   - ./build.sh
 
 jobs:
   include:
-    # - &test
-    #   stage: test
-    #   script:
-    #     - docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
-    #   env: IMAGE="yap.sh-ubuntu:16.04"
+    - &test
+      stage: test
+      script:
+        - docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
+      env: IMAGE="yap.sh-ubuntu:16.04"
 
-    # # - <<: *test
-    # #   env: IMAGE="yap.sh-ubuntu:18.04"
+    # - <<: *test
+    #   env: IMAGE="yap.sh-ubuntu:18.04"
 
-    # - stage: Coverage check
-    #   script: ./coverage.sh
+    - stage: Coverage check
+      script: ./coverage.sh
 
     - stage: deploy
       script: ./build.sh
