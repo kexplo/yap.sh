@@ -145,3 +145,16 @@ get_os_type () {
 has () {
   type "$1" > /dev/null 2>&1
 }
+
+brew_inst () {
+  local brew_pkg="$1"
+  if brew ls --versions "$brew_pkg" >/dev/null; then
+    # Upgrade brew package if outdated
+    if brew outdated | grep -q "$brew_pkg"; then
+      brew upgrade "$brew_pkg"
+    fi
+  else
+    # Install brew package if not installed
+    brew install "$brew_pkg"
+  fi
+}
