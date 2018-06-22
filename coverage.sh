@@ -79,7 +79,7 @@ function run() {
   print_no_recipes ${no_osx_recipes[@]+"${no_osx_recipes[@]}"}
 
   # if [ "${#no_ubuntu_16_recipes[@]}" -gt 0 ] || [ "${#no_ubuntu_18_recipes[@]}" -gt 0 ] || [ "${#no_osx_recipes[@]}" -gt 0 ]; then
-  if [ "${#no_ubuntu_16_recipes[@]}" -gt 0 ] || [ "${#no_ubuntu_18_recipes[@]}" -gt 0 ]; then
+  if [ "${#no_ubuntu_16_recipes[@]}" -gt 0 ]; then
     return 1
   fi
 }
