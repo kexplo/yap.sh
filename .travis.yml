@@ -29,9 +29,11 @@ jobs:
       script: ./coverage.sh
 
     - stage: deploy
-      local-dir: "./gh-pages"
       provider: pages
+      skip-cleanup: true
+      local-dir: "./gh-pages"
       github-token: $GITHUB_TOKEN
+      keep-history: true
       name: Chanwoong Kim
       email: chanwoong@chanwoong.kim
       on:
