@@ -8,6 +8,11 @@ global:
   # SEE: https://stackoverflow.com/a/48398032/1545387
   - HOMEBREW_FORCE_VENDOR_RUBY=1
 
+cache:
+  directories:
+    - ~/.docker_imgs
+    - ./gh-pages
+
 jobs:
   include:
     - stage: build
@@ -17,10 +22,6 @@ jobs:
         - mkdir -p ~/.docker_imgs
         - docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | xargs -n 2 -t sh -c 'test -e ~/.docker_imgs/$1.tar.gz || docker save $0 | gzip -2 > ~/.docker_imgs/$1.tar.gz'
         - ./build.sh
-      cache:
-        directories:
-          - ~/.docker_imgs
-          - ./gh-pages
 
     - &test
       stage: test
