@@ -54,3 +54,4 @@ for recipe in $yapsh_dir/recipes/*; do
 done
 
 chmod +x "$yapsh_dir/gh-pages/index.html"
+cp "$yapsh_dir/web.html" "$yapsh_dir/gh-pages"
