@@ -12,9 +12,7 @@ function install_vim_dependencies() {
       libperl-dev
       ncurses-dev
       mono-xbuild  # for YouCompleteMe
-      libmono-system-xml-linq4.0-cil  # for YouCompleteMe
-      libmono-microsoft-csharp4.0-cil  # for YouCompleteMe
-      libmono-system-data-datasetextensions4.0-cil  # for YouCompleteMe
+      mono-devel  # for YouCompleteMe
       cmake        # for YouCompleteMe
     )
     sudo apt-get install -y "${pkgs[@]}"
