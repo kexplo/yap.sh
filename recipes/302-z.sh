@@ -2,4 +2,4 @@
 # pass os: all
 set -euo pipefail
 
-brew install z
+brew_inst z

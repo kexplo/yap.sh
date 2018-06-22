@@ -3,4 +3,4 @@
 set -euo pipefail
 
 info "Installing facebook's PathPicker(fpp)..."
-brew install fpp
+brew_inst fpp
