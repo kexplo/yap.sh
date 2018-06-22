@@ -14,11 +14,19 @@ jobs:
       script:
         - docker build -t yap.sh-ubuntu:16.04 docker --build-arg UBUNTU_VERSION=16.04
         - docker build -t yap.sh-ubuntu:18.04 docker --build-arg UBUNTU_VERSION=18.04
+        - mkdir -p ~/.docker_imgs
+        - docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | xargs -n 2 -t sh -c 'test -e ~/.docker_imgs/$1.tar.gz || docker save $0 | gzip -2 > ~/.docker_imgs/$1.tar.gz'
         - ./build.sh
+      cache:
+        directories:
+          - ~/.docker_imgs
+          - ./gh-pages
 
     - &test
       stage: test
-      script: docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
+      script:
+        - if [[ -d ~/.docker_imgs ]]; then ls ~/.docker_imgs/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
+        - docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
       env: IMAGE="yap.sh-ubuntu:16.04"
 
     - <<: *test
