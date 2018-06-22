@@ -1,31 +1,35 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# vim: set filetype=sh:
+
 # <style> body { display: none; } </style>
 # <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
 # <script> $(document.body).load('web.html'); </script>
-# vim:syntax=sh
+#!/usr/bin/env bash
+# vim: set filetype=sh:
 #
 # yap.sh
 # ~~~~~~
 #
-# Shortest way to terraform a Ubuntu environment as for my taste:
-# inspired by sub.sh ( https://github.com/sublee/sub.sh )
+# Shortest way to terraform a Ubuntu 16.04 environment as for my taste
 #
-#  $ curl -sL yap.sh | bash [-s - OPTIONS]
-#  $ wget -qO- yap.sh | bash [-s - OPTIONS]
+#  $ curl -sL yap.sh | bash
+#   or
+#  $ wget -qO- yap.sh | bash
 #
-set -e; function _ {
-TIMESTAMP=$(date +%s)
-USER=$(whoami)
-RC_REPO=~/rc
 
-# Where some backup files to be stored.
-BAK=~/.yap.sh-bak-$TIMESTAMP
+set -euo pipefail; 
+
+readonly yapsh_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Don't update APT if the last updated time is in a day.
-UPDATE_APT_AFTER=86400
-APT_UPDATED_AT=~/.yap.sh-apt-updated-at
+readonly update_apt_after=86400
+readonly apt_updated_at="$HOME/.yap.sh-apt-updated-at"
 
-function help {
+# Where some backup files to be stored.
+readonly timestamp=$(date +%s)
+readonly backup_dir=~/.yap.sh-bak-$timestamp
+
+print_help () {
   # Print the help message for --help.
   echo "Usage: curl -sL yap.sh | bash [-s - OPTIONS]"
   echo
@@ -36,145 +40,395 @@ function help {
   echo "                      updating period."
 }
 
-# Configure options.
-APT_UPDATE=auto
-for i in "$@"; do
-  case $i in
-    --help)
-      help
-      exit;;
-    --no-apt-update)
-      APT_UPDATE=false
-      shift;;
-    --force-apt-update)
-      APT_UPDATE=true
-      shift;;
-    *)
-      ;;
-  esac
-done
+git_repo () {
+  # Clone git repo. if the repo already exists, just pull
+  local url="$1"
+  local save_path="$2"
 
-if [[ -z $TERM ]]; then
-  function secho {
-    echo "$2"
-  }
-else
-  function secho {
-    echo -e "$(tput setaf $1)$2$(tput sgr0)"
-  }
-fi
+  if [[ -d "$save_path" ]]; then
+    git -C "$save_path" pull --rebase
+  else
+    mkdir -p "$save_path"
+    git clone "$url" "$save_path"
+  fi
+}
 
-function info {
+github_repo () {
+  local url="$1"
+  local save_path="$2"
+  git_repo "https://github.com/$1" "$2"
+}
+
+secho () {
+  local color="$1"
+  local msg="$2"
+  if [[ -z "$TERM" ]]; then
+    echo "$msg"
+  else
+    echo -e "$(tput setaf "${color}")${msg}$(tput sgr0)"
+  fi
+}
+
+info () {
+  local msg="$1"
   # Print an information log.
-  secho 6 "$1"
+  secho 6 "$msg"
 }
 
-function err {
+err () {
+  local msg="$1"
   # Print a red colored error message.
-  secho 1 "$1"
+  secho 1 "$msg"
 }
 
-function fatal {
+fatal () {
   # Print a red colored error message and exit the script.
   err "$@"
   exit 1
 }
 
-function git-pull {
-  # Clone a Git repository.  If the repository already exists,
-  # just pull from the remote.
-  SRC="$1"
-  DEST="$2"
-  if [[ ! -d "$DEST/.git" ]]; then
-    mkdir -p $DEST
-    git clone $SRC $DEST
-  else
-    git -C $DEST pull
-  fi
+failed () {
+  fatal "Failed to running yap.sh. Error on line $1"
 }
+trap 'failed $LINENO' ERR
 
-function sym-link {
+sym_link () {
   # Make a symbolic link.  If something should be backed up at
-  # the destination path, it moves that to $BAK.
-  SRC="$1"
-  DEST="$2"
-  if [[ -e $DEST || -L $DEST ]]; then
-    if [[ "$(readlink -f $SRC)" == "$(readlink -f $DEST)" ]]; then
+  # the destination path, it moves that to $BAKUP_DIR.
+  local src="$1"
+  local dest="$2"
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    if [[ "$(readlink -f "$src")" == "$(readlink -f "$dest")" ]]; then
       return
     fi
-    mkdir -p $BAK
-    mv $DEST $BAK
+    mkdir -p "$backup_dir"
+    mv "$dest" "$backup_dir"
   fi
-  ln -s $SRC $DEST
+  ln -s "$src" "$dest" 
 }
 
-function failed {
-  fatal "Failed to terraform by yap.sh."
+check_ubuntu_ver () {
+  local version="$1"
+  if [ -f '/etc/os-release' ]; then
+    # shellcheck disable=SC1091
+    source '/etc/os-release'
+    if [[ "$NAME" != "Ubuntu" ]]; then
+      false
+    fi
+    if [[ "$VERSION_ID" != "$version" ]]; then
+      false
+    else
+      true
+    fi
+  else
+    false
+  fi
 }
-trap failed ERR
 
-# Go to the home directory.  A current working directory
-# may deny access from this user.
-cd ~
+is_ubuntu_16_04 () {
+  check_ubuntu_ver "16.04"
+}
 
-# Install packages from APT.
-if [[ "$APT_UPDATE" != false ]]; then
-  APT_UPDATED_BEFORE=$((UPDATE_APT_AFTER + 1))
-  if [[ "$APT_UPDATE" == auto && -f $APT_UPDATED_AT ]]; then
-    APT_UPDATED_BEFORE=$(($TIMESTAMP - $(cat $APT_UPDATED_AT)))
+
+is_ubuntu_18_04 () {
+  check_ubuntu_ver "18.04"
+}
+
+is_osx () {
+  [[ "$(uname)" == "Darwin" ]]
+}
+
+get_os_type () {
+  if is_ubuntu_16_04; then
+    echo "ubuntu1604"
+  elif is_osx; then
+    echo "osx"
+  else
+    echo "unknown"
   fi
-  if [[ $APT_UPDATED_BEFORE -gt $UPDATE_APT_AFTER ]]; then
-    info "Updating APT package lists..."
-    sudo apt-get update
-    echo $TIMESTAMP > $APT_UPDATED_AT
+}
+
+has () {
+  type "$1" > /dev/null 2>&1
+}
+
+brew_inst () {
+  local brew_pkg="$1"
+  if brew ls --versions "$brew_pkg" >/dev/null; then
+    # Upgrade brew package if outdated
+    if brew outdated | grep -q "$brew_pkg"; then
+      brew upgrade "$brew_pkg"
+    fi
+  else
+    # Install brew package if not installed
+    brew install "$brew_pkg"
   fi
-fi
-info "Installing packages from APT..."
-sudo apt-get install -y ack-grep aptitude curl git git-flow htop ntpdate vim
+}
+echo '================================================================================'
+info 'Running 000-base-dependencies.sh...'
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Install ZSH and Oh My ZSH!
-if [[ ! -x "$(command -v zsh)" ]]; then
-  info "Installing Zsh..."
-  sudo apt-get install -y zsh
-fi
-info "Setting up the Zsh environment..."
-sudo chsh -s `which zsh` $USER
-git-pull https://github.com/robbyrussell/oh-my-zsh ~/.oh-my-zsh
-git-pull https://github.com/zsh-users/zsh-syntax-highlighting \
-         ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-git-pull https://github.com/zsh-users/zsh-autosuggestions \
-         ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-git-pull https://github.com/bobthecow/git-flow-completion \
-         ~/.oh-my-zsh/custom/plugins/git-flow-completion
+if is_ubuntu_16_04; then
 
-# Install Vim-Plug for Vim.
-info "Setting up the Vim environment..."
-# enable python2 support (vim-nox-py2)
-# install the requirements for YouCompleteMe (mono-xbuild, cmake)
-sudo apt-get install -y vim-nox-py2 mono-xbuild cmake
-if [ ! -f ~/.vim/autoload/plug.vim ]
-then
-  info "Installing vim-plug..."
-  curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
+  readonly apt_pkgs=(
+    aptitude
+    build-essential
+    curl
+    git
+    git-flow
+    htop
+    zsh
+    gawk         # Fix zplug update raises unknown error, SEE: https://github.com/zplug/zplug/issues/359#issuecomment-349534715
+    wget
+   )
 
-# Install tmux
-info "Setting up the Tmux environment..."
-if [[ ! -x "$(command -v tmux)" ]]; then
-  info "Installing Tmux..."
-  sudo apt-get install -y tmux
+  sudo apt-get update
+  sudo apt-get install -y "${apt_pkgs[@]}"
+elif is_osx; then
+  xcode-select --install
+  # install brew without prompt
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null
+else
+  info "Skipped: $(get_os_type)"
 fi
-git-pull https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 100-rc.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
 
-# Apply .rc files.
+readonly rc_repo="$HOME/rc"
+
+# Symbolic links config files.
 info "Linking dot files from kexplo/rc..."
-git-pull https://github.com/kexplo/rc.git $RC_REPO
-sym-link $RC_REPO/.vimrc ~/.vimrc
-sym-link $RC_REPO/.zshrc ~/.zshrc
-sym-link $RC_REPO/.gitconfig ~/.gitconfig
-sym-link $RC_REPO/.tmux.conf ~/.tmux.conf
-sym-link $RC_REPO/kexplo.zsh-theme ~/.oh-my-zsh/custom/kexplo.zsh-theme
+
+github_repo kexplo/rc.git "$rc_repo"
+sym_link "$rc_repo/stdlib.sh" "$HOME/stdlib.sh"
+sym_link "$rc_repo/.vimrc" "$HOME/.vimrc"
+sym_link "$rc_repo/.zshrc" "$HOME/.zshrc"
+sym_link "$rc_repo/.gitconfig" "$HOME/.gitconfig"
+sym_link "$rc_repo/.tmux.conf" "$HOME/.tmux.conf"
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 120-python.sh...'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if is_ubuntu_16_04; then
+  info "Setting up the Python environment..."
+  sudo apt-get install -y \
+    python-minimal
+
+  sudo apt-get install -y \
+    python2.7-dev
+
+  sudo apt-get install -y \
+    python-setuptools \
+    python-pip \
+    virtualenv
+
+  sudo apt-get install -y \
+    python3 \
+    python3-dev
+fi
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 121-pyenv.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+github_repo pyenv/pyenv "$HOME/.pyenv"
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 122-pyenv-virtualenv.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+github_repo pyenv/pyenv-virtualenv.git "$HOME/.pyenv/plugins/pyenv-virtualenv"
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 200-linuxbrew.sh...'
+#!/usr/bin/env bash
+# pass os: ubuntu 16.04
+# pass os: ubuntu 18.04
+set -euo pipefail
+
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+if ! has brew; then
+  if [[ "$(uname -s)" == "Linux" ]]; then
+    info "Installing linuxbrew...."
+
+    set +o pipefail  # prevent to failing yap.sh
+    yes | sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+    set -o pipefail
+  fi
+else
+  info "Skipped, Linuxbrew already installed"
+fi
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 201-direnv.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+brew_inst direnv
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 202-fpp.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+info "Installing facebook's PathPicker(fpp)..."
+brew_inst fpp
+
+# fix YCM import error.
+# SEE: https://github.com/Valloric/YouCompleteMe/issues/2883
+if brew ls --versions 'python@2' >/dev/null; then
+  brew uninstall --ignore-dependencies python@2
+fi
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 300-cargo.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+if ! has cargo; then
+  info "Installing cargo..."
+  curl -sSf https://static.rust-lang.org/rustup.sh | sh
+else
+  info "Skipped, cargo already installed"
+fi
+
+export PATH="$HOME/.cargo/bin:$PATH"
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 301-ripgrep.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+if ! has rg; then
+  info "Installing ripgrep..."
+  cargo install ripgrep
+else
+  info "Skipped, ripgrep already installed"
+fi
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 302-z.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+brew_inst z
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 400-zplug.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
+
+info "Setting up the Zsh environment..."
+
+set_zsh_as_default_shell() {
+  sudo chsh -s "$(which zsh)" "$USER"
+}
+
+install_zplug() {
+  github_repo zplug/zplug "$HOME/.zplug"
+}
+
+ensure_zplug_plugins() {
+  # Ensure the latest zplug plugins installed
+  zsh -c "
+  source \"$HOME/.zshrc\"
+  if ! zplug check; then
+    zplug install
+  else
+    zplug update
+  fi
+  "
+}
+
+set_zsh_as_default_shell
+install_zplug
+ensure_zplug_plugins
+
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 410-tmux.sh...'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# if is_ubuntu_16_04; then
+#   sudo apt-get install -y tmux
+# fi
+
+function install_tmux_dependencies() {
+  if is_ubuntu_16_04; then
+    local pkgs=(
+      automake
+      build-essential
+      pkg-config
+      libevent-dev
+      libncurses5-dev
+    )
+    sudo apt-get install -y "${pkgs[@]}"
+  fi
+}
+
+function check_tmux_installed() {
+  version="$1"
+  if ! has tmux; then
+    false
+  fi
+  tmux -V | grep -q "tmux $version"
+}
+
+function install_tmux() {
+  local version="$1"
+
+  if check_tmux_installed "$version"; then
+    echo "tmux $version already installed"
+    return
+  fi
+
+  mkdir -p /tmp/tmux
+  wget -qO- "https://github.com/tmux/tmux/releases/download/${version}/tmux-${version}.tar.gz" | tar xvz -C /tmp/tmux
+  pushd /tmp/tmux/tmux*
+   ./configure
+   make
+   sudo make install
+  popd
+  rm -rf /tmp/tmux
+}
+
+install_tmux_dependencies
+install_tmux 2.7
+
+info "Installing tpm"
+github_repo tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 
 # Install tmux plugin ( https://github.com/tmux-plugins/tpm/issues/6 )
 info "Installing tmux plugins..."
@@ -186,46 +440,134 @@ tmux new-session -d
 ~/.tmux/plugins/tpm/scripts/install_plugins.sh
 # killing the server is not required, I guess
 tmux kill-server
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 420-vim.sh...'
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Setup a Python environment.
-info "Setting up the Python environment..."
-sudo apt-get install -y python python-dev python-setuptools python-pip python3-dev
-if [[ ! -x "$(command -v virtualenv)" ]]; then
-  sudo pip install virtualenv
-fi
-sudo pip install -U pdbpp
+function install_vim_dependencies() {
+  if is_ubuntu_16_04; then
+    local pkgs=(
+      lua5.1
+      liblua5.1-dev
+      luajit
+      libluajit-5.1-dev
+      ruby-dev
+      libperl-dev
+      ncurses-dev
+      mono-xbuild  # for YouCompleteMe
+      mono-devel  # for YouCompleteMe
+      cmake        # for YouCompleteMe
+    )
+    sudo apt-get install -y "${pkgs[@]}"
+  fi
+}
 
-# Install usefual utilities.
-info "Installing linuxbrew...."
-yes | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
-PATH="$HOME/.linuxbrew/bin:$PATH"
+function check_vim_installed() {
+  version="$1"
+  if ! has vim; then
+    false
+  fi
+  vim --version | head -1 | grep -q "Vi IMproved $version"
+}
 
-info "Installing facebook's PathPicker(fpp)..."
-brew install fpp
+function install_vim () {
+  version="$1"
 
-info "Installing cargo..."
-curl -sSf https://static.rust-lang.org/rustup.sh | sh
+  if check_vim_installed "$version"; then
+    echo "Vim $version already installed"
+    return
+  fi
 
-info "Installing ripgrep..."
-cargo install ripgrep
+  version_regex="${version/./\\.}"
+  # Clone latest revision of version
+  git clone -b "$(git ls-remote --tags https://github.com/vim/vim.git | grep -o "v${version_regex}"'\.[0-9]\+' | tail -1)" --depth 1 https://github.com/vim/vim.git /tmp/vim
+  pushd '/tmp/vim'
+    install_vim_dependencies
+
+    # NOTE: If both python2.x and python3.x are enabled then the linking will be via dlopen(), dlsym(), dlclose().
+    # SEE: https://github.com/vim/vim/blob/master/src/Makefile#L444-L445
+    ./configure --with-features=huge \
+      --enable-multibyte \
+      --enable-rubyinterp=yes \
+      --enable-pythoninterp=yes \
+      --with-python-command=/usr/bin/python2 \
+      --enable-perlinterp=dynamic \
+      --enable-luainterp=yes \
+      --with-luajit \
+      --enable-cscope \
+      --enable-fail-if-missing \
+      --prefix=/usr/local
+    # --enable-python3interp=yes \
+    # --with-python3-command=/usr/bin/python3 \
+    sudo make install
+  popd
+  sudo rm -rf /tmp/vim
+}
+
+function install_vim_ycm() {
+  pushd "$HOME/.vim/plugged/YouCompleteMe"
+   python ./install.py --cs-completer --clang-completer 
+  popd
+}
+
+function install_vim_plugins() {
+  if [ ! -f "$HOME/.vim/autoload/plug.vim" ]
+  then
+    info "Installing Vim-Plug..."
+    curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  fi
+
+  local prev_ycm_version=""
+  if [ -d "$HOME/.vim/plugged/YouCompleteMe" ]; then
+    prev_ycm_version=$(git -C "$HOME/.vim/plugged/YouCompleteMe" rev-parse --short HEAD)
+  fi
+
+  info "Installing Vim plugins..."
+  vim +PlugUpdate +qall
+
+  local new_ycm_version
+  new_ycm_version=$(git -C "$HOME/.vim/plugged/YouCompleteMe" rev-parse --short HEAD)
+  if [[ "$prev_ycm_version" != "$new_ycm_version" ]]; then
+    install_vim_ycm
+  fi
+}
+
+function install_vi_symbolic_link() {
+  sudo ln -fs $(which vim) /usr/bin/vi
+}
+
+install_vim 8.1
+install_vi_symbolic_link
+install_vim_plugins
+echo '================================================================================'
+echo ''
+echo '================================================================================'
+info 'Running 999-logo.sh...'
+#!/usr/bin/env bash
+# pass os: all
+set -euo pipefail
 
 # Show funny logo.
-info "
+info '
   _  _  __   ____  _   
  ( \/ )/ _\ (  _ \/ \   
   )  //    \ ) __/\_/   
  (__/ \_/\_/(__)  (_)   
-"
+'
 
 info "Terraformed successfully by yap.sh."
-if [[ -d $BAK ]]; then
-  info "Backup files are stored in $BAK"
+if [[ -d "$backup_dir" ]]; then
+  info "Backup files are stored in $backup_dir"
 fi
-if [[ $SHELL != $(which zsh) && -z $ZSH ]]; then
-  info "To use terraformed ZSH, relogin or"
+if [ "$SHELL" != "$(which zsh)" ] && [ "${ZSH:-x}" == "x" ]; then
+  info "Now, ZSH is default shell. To use terraformed ZSH, re-login or"
   echo
   info "  $ zsh"
   echo
 fi
-
-}; _ $@
+echo '================================================================================'
+echo ''
