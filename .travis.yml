@@ -12,7 +12,7 @@ env:
   - IMAGE="yap.sh-ubuntu:16.04"
   - IMAGE="yap.sh-ubuntu:18.04"
 
-before_script:
+script:
   - docker build -t yap.sh-ubuntu:16.04 docker --build-arg UBUNTU_VERSION=16.04
   - docker build -t yap.sh-ubuntu:18.04 docker --build-arg UBUNTU_VERSION=18.04
   - ./build.sh
