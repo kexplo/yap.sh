@@ -16,17 +16,17 @@ before_script:
 
 jobs:
   include:
-    - &test
-      stage: test
-      script:
-        - docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
-      env: IMAGE="yap.sh-ubuntu:16.04"
+    # - &test
+    #   stage: test
+    #   script:
+    #     - docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
+    #   env: IMAGE="yap.sh-ubuntu:16.04"
 
-    # - <<: *test
-    #   env: IMAGE="yap.sh-ubuntu:18.04"
+    # # - <<: *test
+    # #   env: IMAGE="yap.sh-ubuntu:18.04"
 
-    - stage: Coverage check
-      script: ./coverage.sh
+    # - stage: Coverage check
+    #   script: ./coverage.sh
 
     - stage: deploy
       provider: pages
