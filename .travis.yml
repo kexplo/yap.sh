@@ -17,10 +17,13 @@ jobs:
         - ./build.sh
 
     - stage: test
+      matrix:
+        include:
+          - env:
+            - IMAGE="yap.sh-ubuntu:16.04"
+          - env:
+            - IMAGE="yap.sh-ubuntu:18.04"
       script: docker run -it --name yap.sh -v "$PWD/gh-pages/index.html:/yap.sh" "$IMAGE" /yap.sh
-      env:
-        - IMAGE="yap.sh-ubuntu:16.04"
-        - IMAGE="yap.sh-ubuntu:18.04"
 
     - stage: Coverage check
       script: ./coverage.sh
