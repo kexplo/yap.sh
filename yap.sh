@@ -6,9 +6,9 @@
 #
 # Shortest way to terraform a Ubuntu 16.04 environment as for my taste
 #
-#  $ curl -sL yap.sh | bash [-s - OPTIONS]
+#  $ curl -sL yap.sh | bash
 #   or
-#  $ wget -qO- yap.sh | bash [-s - OPTIONS]
+#  $ wget -qO- yap.sh | bash
 #
 
 set -euo pipefail; 
