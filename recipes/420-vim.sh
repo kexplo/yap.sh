@@ -67,7 +67,7 @@ function install_vim_ycm() {
 }
 
 function install_vim_plugins() {
-  if [ ! -f ~/.vim/autoload/plug.vim ]
+  if [ ! -f "$HOME/.vim/autoload/plug.vim" ]
   then
     info "Installing Vim-Plug..."
     curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
