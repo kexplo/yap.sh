@@ -9,6 +9,7 @@ global:
   - HOMEBREW_FORCE_VENDOR_RUBY=1
 
 cache:
+  bundler: true
   directories:
     - ~/.docker_imgs
     - ./gh-pages
