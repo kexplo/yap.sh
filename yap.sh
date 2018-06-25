@@ -13,8 +13,6 @@
 
 set -euo pipefail; 
 
-readonly yapsh_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 # Don't update APT if the last updated time is in a day.
 readonly update_apt_after=86400
 readonly apt_updated_at="$HOME/.yap.sh-apt-updated-at"
