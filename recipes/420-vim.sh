@@ -81,7 +81,7 @@ function install_vim_plugins() {
   fi
 
   info "Installing Vim plugins..."
-  vim +PlugUpdate +qall
+  vim +PlugUpdate +qall || true
 
   local new_ycm_version
   new_ycm_version=$(git -C "$HOME/.vim/plugged/YouCompleteMe" rev-parse --short HEAD)
