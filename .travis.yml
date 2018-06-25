@@ -3,6 +3,11 @@ sudo: required
 services:
   - docker
 
+branches:
+  only:
+    - master
+    - develop
+
 global:
   # It fixes failed to install Linuxbrew on Travis-CI
   # SEE: https://stackoverflow.com/a/48398032/1545387
