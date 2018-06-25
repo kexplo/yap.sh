@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+check_sudo_requires_password() {
+  if ! sudo -n true 2>/dev/null; then
+    err "sudo without a password is required for run yap.sh"
+    echo
+    echo "Run the following command to make $USER can use sudo without password:"
+    info "  sudo echo '$USER ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/$USER"
+    echo
+    exit 1
+  fi
+}
+
+check_sudo_requires_password
+
 if is_ubuntu_16_04; then
 
   readonly apt_pkgs=(
