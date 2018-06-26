@@ -1,11 +1,22 @@
-<html>
-	<head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-		<title>yap.sh</title>
-	</head>
-	<body>
-		<pre>
+<script id="head" type="text/html">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>yap.sh</title>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121317903-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-121317903-1');
+  </script>
+</script>
+<script type="text/javascript">
+  $(document.head).html($("#head").text());
+</script>
+
+<pre>
 usage
 ~~~~~
 
@@ -15,6 +26,4 @@ $ wget -qO- yap.sh | bash
 
 Tested platforms:
   - Ubuntu 16.04
-		</pre>
-	</body>
-</html>
+</pre>
