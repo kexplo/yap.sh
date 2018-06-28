@@ -148,7 +148,7 @@ brew_inst () {
   local brew_pkg="$1"
   if brew ls --versions "$brew_pkg" >/dev/null; then
     # Upgrade brew package if outdated
-    if brew outdated | grep -q "$brew_pkg"; then
+    if brew outdated | grep -wq "$brew_pkg"; then
       brew upgrade "$brew_pkg"
     fi
   else
